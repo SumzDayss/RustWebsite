@@ -76,12 +76,3 @@ VALUES
    'Komandas sacentās par uzvarētāja titulu.',
    'Serverī notika sezonas noslēguma pasākums ar balvām uzvarētājiem.',
    '', '2026-09-20');
-
-INSERT INTO galerija
-  (spele_id, attela_cels, nosaukums, apraksts)
-VALUES
-  (1, 'img/galerija/01.svg', 'Koka bāze', 'Pirmā bāze no koka.'),
-  (1, 'img/galerija/02.svg', 'Akmens rūpnīca', 'Resursu vieta laukā.'),
-  (1, 'img/galerija/03.svg', 'Nakts uzbrukums', 'Komanda dodas uzbrukumā.'),
-  (1, 'img/galerija/04.svg', 'Signālraķete', 'Raķete norāda uz pieminekli.'),
-  (1, 'img/galerija/05.svg', 'Ugunskurs', 'Spēlētāji sasildās pie ugunskura.');

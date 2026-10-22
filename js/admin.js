@@ -1,21 +1,37 @@
 var forma = document.getElementById("zinas-forma");
 var poga = document.getElementById("zinas-poga");
 var atceltPoga = document.getElementById("atcelt-poga");
+var zinas = [];
 
 function ieladetZinas() {
-  fetch("/api/news").then(function (r) { return r.json(); }).then(function (zinas) {
-    document.getElementById("zinu-saraksts").innerHTML = zinas.map(function (z) {
-      return "<div class=\"ieraksts\">" +
-        "<strong>" + z.virsraksts + "</strong> <small>(" + z.kategorija + ")</small><br>" +
-        "<button class=\"dzest-poga\" onclick=\"labot(" + z.id + ")\">Labot</button> " +
-        "<button class=\"dzest-poga\" onclick=\"dzestZinu(" + z.id + ")\">Dzēst</button>" +
-        "</div>";
-    }).join("") || "<p>Nav ziņu.</p>";
-  });
+  fetch("/api/news")
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      zinas = data;
+      var html = "";
+
+      for (var i = 0; i < zinas.length; i++) {
+        var z = zinas[i];
+        html += "<div class=\"ieraksts\">" +
+          "<strong>" + z.virsraksts + "</strong> <small>(" + z.kategorija + ")</small><br>" +
+          "<button class=\"dzest-poga\" onclick=\"labot(" + z.id + ")\">Labot</button> " +
+          "<button class=\"dzest-poga\" onclick=\"dzestZinu(" + z.id + ")\">Dzēst</button>" +
+          "</div>";
+      }
+
+      if (html === "") {
+        html = "<p>Nav ziņu.</p>";
+      }
+
+      document.getElementById("zinu-saraksts").innerHTML = html;
+    });
 }
 
-forma.addEventListener("submit", function (e) {
-  e.preventDefault();
+forma.addEventListener("submit", function (event) {
+  event.preventDefault();
+
   var id = document.getElementById("zinas-id").value;
   var dati = {
     kategorija: document.getElementById("kategorija").value,
@@ -25,8 +41,14 @@ forma.addEventListener("submit", function (e) {
     attels: document.getElementById("attels").value,
     publicesanas_datums: document.getElementById("publicesanas_datums").value
   };
-  var url = id ? "/api/news/" + id : "/api/news";
-  var metode = id ? "PUT" : "POST";
+
+  var url = "/api/news";
+  var metode = "POST";
+
+  if (id) {
+    url = "/api/news/" + id;
+    metode = "PUT";
+  }
 
   fetch(url, {
     method: metode,
@@ -42,20 +64,29 @@ forma.addEventListener("submit", function (e) {
 });
 
 function labot(id) {
-  fetch("/api/news").then(function (r) { return r.json(); }).then(function (zinas) {
-    var z = zinas.find(function (x) { return x.id === id; });
-    if (!z) return;
-    document.getElementById("zinas-id").value = z.id;
-    document.getElementById("kategorija").value = z.kategorija;
-    document.getElementById("virsraksts").value = z.virsraksts;
-    document.getElementById("iss_apraksts").value = z.iss_apraksts;
-    document.getElementById("pilns_saturs").value = z.pilns_saturs;
-    document.getElementById("attels").value = z.attels || "";
-    document.getElementById("publicesanas_datums").value = z.publicesanas_datums.slice(0, 10);
-    poga.textContent = "Saglabāt";
-    atceltPoga.hidden = false;
-    window.scrollTo(0, 0);
-  });
+  var atrasta = null;
+
+  for (var i = 0; i < zinas.length; i++) {
+    if (zinas[i].id === id) {
+      atrasta = zinas[i];
+      break;
+    }
+  }
+
+  if (atrasta === null) {
+    return;
+  }
+
+  document.getElementById("zinas-id").value = atrasta.id;
+  document.getElementById("kategorija").value = atrasta.kategorija;
+  document.getElementById("virsraksts").value = atrasta.virsraksts;
+  document.getElementById("iss_apraksts").value = atrasta.iss_apraksts;
+  document.getElementById("pilns_saturs").value = atrasta.pilns_saturs;
+  document.getElementById("attels").value = atrasta.attels || "";
+  document.getElementById("publicesanas_datums").value = atrasta.publicesanas_datums.slice(0, 10);
+  poga.textContent = "Saglabāt";
+  atceltPoga.hidden = false;
+  window.scrollTo(0, 0);
 }
 
 atceltPoga.addEventListener("click", function () {
@@ -66,38 +97,58 @@ atceltPoga.addEventListener("click", function () {
 });
 
 function dzestZinu(id) {
-  if (!confirm("Dzēst?")) return;
-  fetch("/api/news/" + id, { method: "DELETE" }).then(ieladetZinas);
+  if (confirm("Dzēst?")) {
+    fetch("/api/news/" + id, { method: "DELETE" }).then(function () {
+      ieladetZinas();
+    });
+  }
 }
 
-document.getElementById("galerijas-forma").addEventListener("submit", function (e) {
-  e.preventDefault();
+document.getElementById("galerijas-forma").addEventListener("submit", function (event) {
+  event.preventDefault();
+
   var fd = new FormData();
   fd.append("attels", document.getElementById("galerijas-fails").files[0]);
   fd.append("nosaukums", document.getElementById("galerijas-nosaukums").value);
   fd.append("apraksts", document.getElementById("galerijas-apraksts").value);
 
   fetch("/api/gallery", { method: "POST", body: fd }).then(function () {
-    e.target.reset();
+    event.target.reset();
     ieladetGaleriju();
   });
 });
 
 function ieladetGaleriju() {
-  fetch("/api/gallery").then(function (r) { return r.json(); }).then(function (atteli) {
-    document.getElementById("galerijas-saraksts").innerHTML = atteli.map(function (a) {
-      return "<div class=\"ieraksts\">" +
-        "<img src=\"" + a.attela_cels + "\" alt=\"\">" +
-        "<strong>" + a.nosaukums + "</strong><br>" +
-        "<button class=\"dzest-poga\" onclick=\"dzestAttelu(" + a.id + ")\">Dzēst</button>" +
-        "</div>";
-    }).join("") || "<p>Nav attēlu.</p>";
-  });
+  fetch("/api/gallery")
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (atteli) {
+      var html = "";
+
+      for (var i = 0; i < atteli.length; i++) {
+        var a = atteli[i];
+        html += "<div class=\"ieraksts\">" +
+          "<img src=\"" + a.attela_cels + "\" alt=\"\">" +
+          "<strong>" + a.nosaukums + "</strong><br>" +
+          "<button class=\"dzest-poga\" onclick=\"dzestAttelu(" + a.id + ")\">Dzēst</button>" +
+          "</div>";
+      }
+
+      if (html === "") {
+        html = "<p>Nav attēlu.</p>";
+      }
+
+      document.getElementById("galerijas-saraksts").innerHTML = html;
+    });
 }
 
 function dzestAttelu(id) {
-  if (!confirm("Dzēst?")) return;
-  fetch("/api/gallery/" + id, { method: "DELETE" }).then(ieladetGaleriju);
+  if (confirm("Dzēst?")) {
+    fetch("/api/gallery/" + id, { method: "DELETE" }).then(function () {
+      ieladetGaleriju();
+    });
+  }
 }
 
 ieladetZinas();

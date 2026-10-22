@@ -1,0 +1,5 @@
+MySQL Workbench → open datubaze.sql → ⚡ Execute (creates rust_lapa with tables + sample data)
+server.js line ~25 → put your MySQL root password in password: ""
+In a terminal in the project folder:
+npm start
+→ open http://localhost:3000 (admin panel: http://localhost:3000/admin.html)

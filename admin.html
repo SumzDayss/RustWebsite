@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="lv">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin – Rust</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-forma {
+      display: grid;
+      gap: 8px;
+      max-width: 500px;
+      margin-bottom: 30px;
+    }
+
+    .admin-forma input,
+    .admin-forma textarea {
+      padding: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      border: 1px solid #555;
+      background: #2b3638;
+      color: #d6d1c3;
+    }
+
+    .admin-forma textarea {
+      min-height: 100px;
+    }
+
+    .ieraksts {
+      border-bottom: 1px solid #2b3638;
+      padding: 10px 0;
+    }
+
+    .ieraksts img {
+      max-width: 120px;
+      display: block;
+      margin: 5px 0;
+    }
+
+    .dzest-poga {
+      background: #c4451f;
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      cursor: pointer;
+    }
+
+    .dzest-poga:hover {
+      background: #e3b341;
+      color: #1f2829;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a class="brand" href="index.html">
+      <img src="img/logo.png" alt="Rust">
+    </a>
+    <nav>
+      <a href="index.html">Sākums</a>
+      <a href="description.html">Par spēli</a>
+      <a href="content.html">Saturs</a>
+      <a href="news.html">Ziņas</a>
+      <a href="gallery.html">Galerija</a>
+      <a href="search.html">Meklēšana</a>
+    </nav>
+  </header>
+
+  <main id="galvenais">
+    <section class="intro">
+      <h2>Admin panelis</h2>
+
+      <h3>Ziņa</h3>
+      <form class="admin-forma" id="zinas-forma">
+        <input type="hidden" id="zinas-id">
+        <input type="text" id="kategorija" placeholder="Kategorija" required>
+        <input type="text" id="virsraksts" placeholder="Virsraksts" required>
+        <input type="text" id="iss_apraksts" placeholder="Īss apraksts" required>
+        <textarea id="pilns_saturs" placeholder="Pilns saturs" required></textarea>
+        <input type="text" id="attels" placeholder="Attēls (nav obligāts)">
+        <input type="date" id="publicesanas_datums" required>
+        <button type="submit" class="button" id="zinas-poga">Pievienot</button>
+        <button type="button" class="button" id="atcelt-poga" hidden>Atcelt</button>
+      </form>
+      <div id="zinu-saraksts"></div>
+
+      <h3>Galerijas attēls</h3>
+      <form class="admin-forma" id="galerijas-forma">
+        <input type="file" id="galerijas-fails" accept="image/*" required>
+        <input type="text" id="galerijas-nosaukums" placeholder="Nosaukums" required>
+        <input type="text" id="galerijas-apraksts" placeholder="Apraksts" required>
+        <button type="submit" class="button">Ievietot</button>
+      </form>
+      <div id="galerijas-saraksts"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Skolas projekts: mīļākās spēles mājaslapa. Spēle Rust pieder tās izstrādātājiem.</p>
+  </footer>
+
+  <script src="js/admin.js"></script>
+
+</body>
+
+</html>

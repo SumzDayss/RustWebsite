@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="lv">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meklēšana – Rust</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .meklesana-forma {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .meklesana-forma input[type="search"] {
+      flex: 1;
+      max-width: 400px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #555;
+      background: #2b3638;
+      color: #d6d1c3;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a class="brand" href="index.html">
+      <img src="img/logo.png" alt="Rust">
+    </a>
+    <nav>
+      <a href="index.html">Sākums</a>
+      <a href="description.html">Par spēli</a>
+      <a href="content.html">Saturs</a>
+      <a href="news.html">Ziņas</a>
+      <a href="gallery.html">Galerija</a>
+      <a href="search.html">Meklēšana</a>
+    </nav>
+  </header>
+
+  <main id="galvenais">
+    <section class="intro">
+      <h2>Meklēšana</h2>
+      <form class="meklesana-forma" id="meklesanas-forma">
+        <input type="search" id="jautajums" placeholder="Meklēt…" required>
+        <button type="submit" class="button">Meklēt</button>
+      </form>
+      <div id="rezultati"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Skolas projekts: mīļākās spēles mājaslapa. Spēle Rust pieder tās izstrādātājiem.</p>
+  </footer>
+
+  <script src="js/search.js"></script>
+
+</body>
+
+</html>

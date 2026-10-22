@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "nosaukums": "Būvniecība",
+    "apraksts": "No koka un akmens šūnām var uzbūvēt vienkāršu bāzi, bet no metāla un durklīša plāksnēm — stipru cietoksni ar kodu durvīm un novērošanas torņiem."
+  },
+  {
+    "id": 2,
+    "nosaukums": "Ieroči",
+    "apraksts": "Sākot ar akmeni un lāpstu, spēlētājs nonāk pie bisēm, automātiem, ložmetējiem un pat granātāmetējiem. Katram ierocim ir savi patronu veidi un uguns ātrums."
+  },
+  {
+    "id": 3,
+    "nosaukums": "Resursi",
+    "apraksts": "Akmens, koks, metāls un sērs ir četri pamata resursi. Tie tiek vākti, pārstrādāti un izmantoti gan būvēšanai, gan ieroču un aprīkojuma izgatavošanai."
+  },
+  {
+    "id": 4,
+    "nosaukums": "Pieminekļi",
+    "apraksts": "Visā kartē izvietotas izlaupāmas struktūras — rūpnīcas, ciemati un militārās bāzes. Tās ir bīstamas, jo tur patrulē NPCs un bieži ierodas arī citi spēlētāji."
+  },
+  {
+    "id": 5,
+    "nosaukums": "Transportlīdzekļi",
+    "apraksts": "Pieejami automobiļi, motocikli, laivas un helikopteri. Transportlīdzekļi prasa degvielu un remontu, bet ļauj ātri pārvietoties pa lielo karti."
+  }
+]

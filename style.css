@@ -1,0 +1,170 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #1f2829;
+  color: #d6d1c3;
+  font-family: "Noto Sans", Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Noto Serif", Georgia, serif;
+}
+
+img {
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 15px 30px;
+  background: rgba(196, 69, 31, 0.65);
+}
+
+header.over-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+.brand img {
+  height: 50px;
+  display: block;
+}
+
+nav a {
+  margin-right: 20px;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+nav a:hover {
+  color: #e3b341;
+}
+
+.hero {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.hero video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-text {
+  position: relative;
+  color: #ffffff;
+  padding: 0 60px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.main-img {
+  max-width: 630px;
+  width: 100%;
+  display: block;
+}
+
+.hero-text .button {
+  margin-top: 25px;
+}
+
+.intro,
+.pillars,
+.featured {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px 30px;
+}
+
+h2 {
+  margin: 0 0 15px;
+}
+
+.intro p {
+  margin: 0 0 15px;
+}
+
+.button {
+  display: inline-block;
+  padding: 12px 25px;
+  background: #c4451f;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.button:hover {
+  background: #e3b341;
+  color: #1f2829;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+.card {
+  flex: 1 1 200px;
+}
+
+.card h3 {
+  margin: 0 0 5px;
+  color: #c4451f;
+}
+
+.card p {
+  margin: 0;
+  color: #a7a392;
+}
+
+.featured {
+  background: #e3b341;
+  color: #1f2829;
+}
+
+.dark {
+  background: #1f2829;
+}
+
+.dark:hover {
+  background: #d6d1c3;
+  color: #1f2829;
+}
+
+footer {
+  padding: 20px 30px;
+  border-top: 1px solid #2b3638;
+  color: #a7a392;
+  font-size: 15px;
+}
+
+footer p {
+  margin: 0;
+}

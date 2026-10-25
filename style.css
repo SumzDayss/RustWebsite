@@ -229,3 +229,35 @@ footer p {
   background: #2b3638;
   color: #d6d1c3;
 }
+
+.speles-saturs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.speles-attels {
+  flex: 0 1 340px;
+  width: 100%;
+  display: block;
+}
+
+.speles-info {
+  flex: 1 1 300px;
+}
+
+.speles-info dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 20px;
+  margin: 0 0 20px;
+}
+
+.speles-info dt {
+  color: #a7a392;
+}
+
+.speles-info dd {
+  margin: 0;
+}

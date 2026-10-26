@@ -37,7 +37,7 @@ app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.get("/style.css", (req, res) => res.sendFile(path.join(__dirname, "style.css")));
 
 app.get("/api/game", wrap(async (req, res) => {
-  const [rows] = await pool.query("SELECT * FROM spele LIMIT 1");
+  const [rows] = await pool.query("SELECT * FROM par_speli LIMIT 1");
   res.json(rows[0] || null);
 }));
 

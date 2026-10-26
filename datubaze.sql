@@ -14,7 +14,24 @@ CREATE DATABASE IF NOT EXISTS rust_lapa
 
 USE rust_lapa;
 
-CREATE TABLE IF NOT EXISTS spele (
+-- Older versions called the game table `spele`; rename it to match the
+-- "Par spēli" section. Safe on fresh installs (does nothing).
+SET @has_old_spele := (
+  SELECT COUNT(*) FROM information_schema.tables
+  WHERE table_schema = DATABASE() AND table_name = 'spele'
+);
+SET @has_new_par_speli := (
+  SELECT COUNT(*) FROM information_schema.tables
+  WHERE table_schema = DATABASE() AND table_name = 'par_speli'
+);
+SET @rename_sql := IF(@has_old_spele > 0 AND @has_new_par_speli = 0,
+  'RENAME TABLE spele TO par_speli',
+  'SELECT 1');
+PREPARE rename_stmt FROM @rename_sql;
+EXECUTE rename_stmt;
+DEALLOCATE PREPARE rename_stmt;
+
+CREATE TABLE IF NOT EXISTS par_speli (
   id               INT UNSIGNED NOT NULL AUTO_INCREMENT,
   nosaukums        VARCHAR(100) NOT NULL,
   izstradatajs     VARCHAR(100) NOT NULL,
@@ -38,7 +55,7 @@ CREATE TABLE IF NOT EXISTS zinas (
   publicesanas_datums DATE         NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_zinas_spele FOREIGN KEY (spele_id)
-    REFERENCES spele (id)
+    REFERENCES par_speli (id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS galerija (
@@ -49,13 +66,13 @@ CREATE TABLE IF NOT EXISTS galerija (
   apraksts    VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   CONSTRAINT fk_galerija_spele FOREIGN KEY (spele_id)
-    REFERENCES spele (id)
+    REFERENCES par_speli (id)
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------
 -- Game
 -- ------------------------------------------------------------
-INSERT IGNORE INTO spele
+INSERT IGNORE INTO par_speli
   (id, nosaukums, izstradatajs, izdevejs, zanrs, izdosanas_gads, platforma, apraksts, galvenais_attels)
 VALUES
   (1, 'Rust', 'Facepunch Studios', 'Facepunch Studios', 'Izdzīvošana', 2018, 'PC',

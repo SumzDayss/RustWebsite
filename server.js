@@ -10,7 +10,8 @@ const pool = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "",
-  database: "rust_lapa"
+  database: "rust_lapa",
+  dateStrings: true
 });
 
 const storage = multer.diskStorage({

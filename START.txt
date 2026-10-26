@@ -1,10 +1,21 @@
-1. MySQL Workbench → open datubaze.sql → ⚡ Execute
-   (creates rust_lapa with tables + demo data; safe to re-run,
-    it only replaces the demo rows with IDs 1-18 / 1-6)
-2. server.js line 12 → put your MySQL root password in password: ""
+Setup (XAMPP / MariaDB)
+
+1. Open XAMPP Control Panel → Start "MySQL".
+   XAMPP's root account has no password, which is what server.js expects.
+
+2. First time only — load the demo data. Either:
+   - phpMyAdmin: http://localhost/phpmyadmin → Import → datubaze.sql, or
+   - terminal in this folder:
+     C:\xampp\mysql\bin\mysql.exe -u root --default-character-set=utf8mb4 -e "SOURCE datubaze.sql"
+
+   Safe to re-run: it replaces only the demo rows (news 1-18, gallery 1-6).
+
 3. In a terminal in the project folder:
    npm install
    npm start
-4. → open http://localhost:3000 (admin panel: http://localhost:3000/admin.html)
+
+4. Open http://localhost:3000
+   Admin panel: http://localhost:3000/admin.html
 
 Demo gallery images are already included in img/galerija/ (demo-1.png … demo-6.png).
+If you switch back to MySQL Server, put its root password in server.js line 12.

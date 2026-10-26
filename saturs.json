@@ -23,5 +23,20 @@
     "id": 5,
     "nosaukums": "Transportlīdzekļi",
     "apraksts": "Pieejami automobiļi, motocikli, laivas un helikopteri. Transportlīdzekļi prasa degvielu un remontu, bet ļauj ātri pārvietoties pa lielo karti."
+  },
+  {
+    "id": 6,
+    "nosaukums": "Elektroenerģija",
+    "apraksts": "No vienkārša vēja ģeneratora līdz lielai saules paneļu sistēmai — elektrība baro kodu durvis, lampas, automātiskos slazdus un citas iekārtas."
+  },
+  {
+    "id": 7,
+    "nosaukums": "Lauksaimniecība",
+    "apraksts": "Sēklu kastes un augu audzēšana ļauj iegūt pārtiku, audumu un krāsvielas. Laba raža nozīmē mazāk laika, kas jāpavada, meklējot ēdienu."
+  },
+  {
+    "id": 8,
+    "nosaukums": "Pirotehnika",
+    "apraksts": "Granātas, dūmu sveces un lielgabali ir noderīgi gan uzbrukumā, gan aizsardzībā. Sprāgstvielas prasa sēru un metālu, tāpēc tās jātaupa."
   }
 ]

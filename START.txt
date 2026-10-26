@@ -1,5 +1,10 @@
-MySQL Workbench → open datubaze.sql → ⚡ Execute (creates rust_lapa with tables + sample data)
-server.js line ~25 → put your MySQL root password in password: ""
-In a terminal in the project folder:
-npm start
-→ open http://localhost:3000 (admin panel: http://localhost:3000/admin.html)
+1. MySQL Workbench → open datubaze.sql → ⚡ Execute
+   (creates rust_lapa with tables + demo data; safe to re-run,
+    it only replaces the demo rows with IDs 1-18 / 1-6)
+2. server.js line 12 → put your MySQL root password in password: ""
+3. In a terminal in the project folder:
+   npm install
+   npm start
+4. → open http://localhost:3000 (admin panel: http://localhost:3000/admin.html)
+
+Demo gallery images are already included in img/galerija/ (demo-1.png … demo-6.png).

@@ -7,6 +7,10 @@ function ieladetSpeli() {
       if (spele) {
         document.getElementById("spelines-nosaukums").textContent = "Kas ir " + spele.nosaukums + "?";
         document.getElementById("spelines-apraksts").textContent = spele.apraksts;
+        var galvenaisAttels = document.getElementById("galvenais-attels");
+        if (galvenaisAttels) {
+          galvenaisAttels.src = spele.galvenais_attels || "img/main.png";
+        }
       }
     });
 }

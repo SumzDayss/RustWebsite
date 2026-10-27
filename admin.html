@@ -29,6 +29,19 @@
     <section class="intro">
       <h2>Admin panelis</h2>
 
+      <h3>Par spēli</h3>
+      <form class="admin-forma" id="speles-forma">
+        <input type="text" id="speles-izstradatajs" placeholder="Izstrādātājs" required>
+        <input type="text" id="speles-izdevejs" placeholder="Izdevējs" required>
+        <input type="text" id="speles-zanrs" placeholder="Žanrs" required>
+        <input type="number" id="speles-izdosanas-gads" placeholder="Izdošanas gads" required>
+        <input type="text" id="speles-platforma" placeholder="Platforma" required>
+        <textarea id="speles-apraksts" placeholder="Apraksts" required></textarea>
+        <input type="text" id="speles-galvenais-attels" placeholder="Galvenais attēls" required>
+        <button type="submit" class="button" id="speles-poga">Saglabāt</button>
+        <p id="speles-pazinojums" style="color: green;"></p>
+      </form>
+
       <h3>Ziņa</h3>
       <form class="admin-forma" id="zinas-forma">
         <input type="hidden" id="zinas-id">

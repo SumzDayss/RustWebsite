@@ -4,6 +4,15 @@ var atceltPoga = document.getElementById("atcelt-poga");
 var zinas = [];
 var spelesForma = document.getElementById("speles-forma");
 
+function escapeHtml(teksts) {
+  return String(teksts)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function ieladetSpeli() {
   if (!spelesForma) return;
   fetch("/api/game")
@@ -38,14 +47,19 @@ if (spelesForma) {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dati)
-    }).then(function () {
+    }).then(function (response) {
       var pazi = document.getElementById("speles-pazinojums");
-      if (pazi) {
-        pazi.textContent = "Saglabāts";
-        setTimeout(function () {
-          pazi.textContent = "";
-        }, 2000);
+      if (!response.ok) {
+        return response.json().then(function (atbilde) {
+          pazi.style.color = "red";
+          pazi.textContent = atbilde.error;
+        });
       }
+      pazi.style.color = "green";
+      pazi.textContent = "Saglabāts";
+      setTimeout(function () {
+        pazi.textContent = "";
+      }, 2000);
     });
   });
 }
@@ -61,7 +75,7 @@ function ieladetZinas() {
       var i = 0;
       while (i < zinas.length) {
         var z = zinas[i];
-        html += "<div class=\"ieraksts\"><strong>" + z.virsraksts + "</strong> <small>(" + z.kategorija + ")</small><br><button class=\"dzest-poga\" onclick=\"labot(" + z.id + ")\">Labot</button> <button class=\"dzest-poga\" onclick=\"dzestZinu(" + z.id + ")\">Dzēst</button></div>";
+        html += "<div class=\"ieraksts\"><strong>" + escapeHtml(z.virsraksts) + "</strong> <small>(" + escapeHtml(z.kategorija) + ")</small><br><button class=\"dzest-poga\" onclick=\"labot(" + z.id + ")\">Labot</button> <button class=\"dzest-poga\" onclick=\"dzestZinu(" + z.id + ")\">Dzēst</button></div>";
         i = i + 1;
       }
       if (html == "") html = "<p>Nav ziņu.</p>";
@@ -94,7 +108,15 @@ forma.addEventListener("submit", function (event) {
     method: metode,
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dati)
-  }).then(function () {
+  }).then(function (response) {
+    var pazi = document.getElementById("zinas-pazinojums");
+    if (!response.ok) {
+      return response.json().then(function (atbilde) {
+        pazi.style.color = "red";
+        pazi.textContent = atbilde.error;
+      });
+    }
+    pazi.textContent = "";
     forma.reset();
     document.getElementById("zinas-id").value = "";
     poga.textContent = "Pievienot";
@@ -150,7 +172,15 @@ document.getElementById("galerijas-forma").addEventListener("submit", function (
   fd.append("nosaukums", document.getElementById("galerijas-nosaukums").value);
   fd.append("apraksts", document.getElementById("galerijas-apraksts").value);
 
-  fetch("/api/gallery", { method: "POST", body: fd }).then(function () {
+  fetch("/api/gallery", { method: "POST", body: fd }).then(function (response) {
+    var pazi = document.getElementById("galerijas-pazinojums");
+    if (!response.ok) {
+      return response.json().then(function (atbilde) {
+        pazi.style.color = "red";
+        pazi.textContent = atbilde.error;
+      });
+    }
+    pazi.textContent = "";
     event.target.reset();
     ieladetGaleriju();
   });
@@ -166,7 +196,7 @@ function ieladetGaleriju() {
       var i = 0;
       while (i < atteli.length) {
         var a = atteli[i];
-        html += "<div class=\"ieraksts\"><img src=\"" + a.attela_cels + "\" alt=\"\"><strong>" + a.nosaukums + "</strong><br><button class=\"dzest-poga\" onclick=\"dzestAttelu(" + a.id + ")\">Dzēst</button></div>";
+        html += "<div class=\"ieraksts\"><img src=\"" + escapeHtml(a.attela_cels) + "\" alt=\"\"><strong>" + escapeHtml(a.nosaukums) + "</strong><br><button class=\"dzest-poga\" onclick=\"dzestAttelu(" + a.id + ")\">Dzēst</button></div>";
         i = i + 1;
       }
       if (html == "") html = "<p>Nav attēlu.</p>";

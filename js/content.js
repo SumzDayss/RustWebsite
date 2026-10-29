@@ -1,50 +1,88 @@
-var sarakstsEl = document.getElementById("saraksts");
-var detalizetiEl = document.getElementById("detalizeti");
+async function ieladetSarakstu() {
+  var vieta = document.getElementById("saraksts");
+  try {
+    var ieraksti = await iegutJson("/api/saturs");
+    paraditSarakstu(vieta, ieraksti);
+  } catch (kluda) {
+    paraditKludu(vieta, "Neizdevās ielādēt datus");
+  }
+}
+
+function paraditSarakstu(vieta, ieraksti) {
+  vieta.textContent = "";
+  var saraksts = document.createElement("ul");
+  saraksts.className = "cards";
+  for (var i = 0; i < ieraksti.length; i++) {
+    var ieraksts = ieraksti[i];
+    var rinda = izveidotSaturaRindu(ieraksts);
+    saraksts.appendChild(rinda);
+  }
+  vieta.appendChild(saraksts);
+}
+
+function izveidotSaturaRindu(ieraksts) {
+  var rinda = document.createElement("li");
+  var saite = document.createElement("a");
+  saite.href = "content.html?id=" + ieraksts.id;
+  var virsraksts = izveidotTekstaElementu("strong", ieraksts.nosaukums);
+  saite.appendChild(virsraksts);
+  rinda.appendChild(saite);
+  return rinda;
+}
+
+async function ieladetIerakstu(id) {
+  var vieta = document.getElementById("detalizeti");
+  var sarakstaVieta = document.getElementById("saraksts");
+  sarakstaVieta.textContent = "";
+  try {
+    var ieraksts = await iegutJson("/api/saturs/" + id);
+    paraditIerakstu(vieta, ieraksts);
+  } catch (kluda) {
+    if (kluda.status === 404) {
+      paraditNekasNav(vieta);
+    } else {
+      paraditKludu(vieta, "Neizdevās ielādēt datus");
+    }
+  }
+}
+
+function paraditIerakstu(vieta, ieraksts) {
+  vieta.textContent = "";
+  var virsraksts = izveidotTekstaElementu("h3", ieraksts.nosaukums);
+  vieta.appendChild(virsraksts);
+  var apraksts = izveidotTekstaElementu("p", ieraksts.apraksts);
+  vieta.appendChild(apraksts);
+  pievienotAtpakalSaiti(vieta);
+}
+
+function paraditNekasNav(vieta) {
+  vieta.textContent = "";
+  var rindkopa = izveidotTekstaElementu("p", "Nav atrasts. ");
+  var saite = document.createElement("a");
+  saite.href = "content.html";
+  saite.textContent = "Atpakaļ";
+  rindkopa.appendChild(saite);
+  vieta.appendChild(rindkopa);
+}
+
+function pievienotAtpakalSaiti(vieta) {
+  var rindkopa = document.createElement("p");
+  var saite = document.createElement("a");
+  saite.href = "content.html";
+  saite.textContent = "← Atpakaļ";
+  rindkopa.appendChild(saite);
+  vieta.appendChild(rindkopa);
+}
+
 var adrese = location.search;
 var id = "";
-var i = 0;
-if (adrese.indexOf("id=") != -1) {
-  var parts = adrese.split("id=");
-  id = parts[1].split("&")[0];
+if (adrese.indexOf("id=") !== -1) {
+  var dalas = adrese.split("id=");
+  id = dalas[1].split("&")[0];
 }
 
-function raditSarakstu() {
-  fetch("/api/saturs")
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (dati) {
-      var html = "<ul class=\"cards\">";
-      i = 0;
-      while (i < dati.length) {
-        html += "<li><a href=\"content.html?id=" + dati[i].id + "\"><strong>" + dati[i].nosaukums + "</strong></a></li>";
-        i = i + 1;
-      }
-      html += "</ul>";
-      sarakstsEl.innerHTML = html;
-    });
-}
-
-function raditIerakstu() {
-  fetch("/api/saturs/" + id)
-    .then(function (response) {
-      if (response.ok == false) {
-        return null;
-      }
-      return response.json();
-    })
-    .then(function (ieraksts) {
-      if (ieraksts == null) {
-        detalizetiEl.innerHTML = "<p>Nav atrasts. <a href=\"content.html\">Atpakaļ</a></p>";
-        return;
-      }
-      sarakstsEl.innerHTML = "";
-      detalizetiEl.innerHTML = "<h3>" + ieraksts.nosaukums + "</h3><p>" + ieraksts.apraksts + "</p><p><a href=\"content.html\">← Atpakaļ</a></p>";
-    });
-}
-
-if (id != "") {
-  raditIerakstu();
+if (id !== "") {
+  ieladetIerakstu(id);
 } else {
-  raditSarakstu();
+  ieladetSarakstu();
 }

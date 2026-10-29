@@ -1,40 +1,59 @@
-function ieladet() {
-  fetch("/api/game")
-    .then(function (response) {
-      if (!response.ok) {
-        throw new Error("Servera kļūda");
-      }
-      return response.json();
-    })
-    .then(function (spele) {
-      var el = document.getElementById("spelines-dati");
-
-      if (!spele) {
-        el.textContent = "Dati nav pieejami.";
-        return;
-      }
-
-      document.getElementById("spelines-nosaukums").textContent = spele.nosaukums;
-      document.title = spele.nosaukums + " – Par spēli";
-
-      el.innerHTML =
-        "<div class=\"speles-saturs\">" +
-          "<img class=\"speles-attels\" src=\"" + spele.galvenais_attels + "\" alt=\"" + spele.nosaukums + "\">" +
-          "<div class=\"speles-info\">" +
-            "<dl>" +
-              "<dt>Izstrādātājs</dt><dd>" + spele.izstradatajs + "</dd>" +
-              "<dt>Izdevējs</dt><dd>" + spele.izdevejs + "</dd>" +
-              "<dt>Žanrs</dt><dd>" + spele.zanrs + "</dd>" +
-              "<dt>Izdošanas gads</dt><dd>" + spele.izdosanas_gads + "</dd>" +
-              "<dt>Platforma</dt><dd>" + spele.platforma + "</dd>" +
-            "</dl>" +
-            "<p>" + spele.apraksts + "</p>" +
-          "</div>" +
-        "</div>";
-    })
-    .catch(function () {
-      document.getElementById("spelines-dati").textContent = "Neizdevās ielādēt datus.";
-    });
+async function ieladetSpeli() {
+  var vieta = document.getElementById("spelines-dati");
+  try {
+    var spele = await iegutJson("/api/game");
+    paraditSpelesDatus(vieta, spele);
+  } catch (kluda) {
+    paraditKludu(vieta, "Neizdevās ielādēt datus");
+  }
 }
 
-ieladet();
+function paraditSpelesDatus(vieta, spele) {
+  if (!spele) {
+    vieta.textContent = "Dati nav pieejami.";
+    return;
+  }
+  var nosaukums = document.getElementById("spelines-nosaukums");
+  nosaukums.textContent = spele.nosaukums;
+  document.title = spele.nosaukums + " – Par spēli";
+  var saturs = izveidotSpelesSaturs(spele);
+  vieta.textContent = "";
+  vieta.appendChild(saturs);
+}
+
+function izveidotSpelesSaturs(spele) {
+  var saturs = document.createElement("div");
+  saturs.className = "speles-saturs";
+  var attels = document.createElement("img");
+  attels.className = "speles-attels";
+  attels.src = spele.galvenais_attels;
+  attels.alt = spele.nosaukums;
+  saturs.appendChild(attels);
+  var informacija = izveidotSpelesInformaciju(spele);
+  saturs.appendChild(informacija);
+  return saturs;
+}
+
+function izveidotSpelesInformaciju(spele) {
+  var informacija = document.createElement("div");
+  informacija.className = "speles-info";
+  var saraksts = document.createElement("dl");
+  pievienotDatuRindu(saraksts, "Izstrādātājs", spele.izstradatajs);
+  pievienotDatuRindu(saraksts, "Izdevējs", spele.izdevejs);
+  pievienotDatuRindu(saraksts, "Žanrs", spele.zanrs);
+  pievienotDatuRindu(saraksts, "Izdošanas gads", spele.izdosanas_gads);
+  pievienotDatuRindu(saraksts, "Platforma", spele.platforma);
+  informacija.appendChild(saraksts);
+  var apraksts = izveidotTekstaElementu("p", spele.apraksts);
+  informacija.appendChild(apraksts);
+  return informacija;
+}
+
+function pievienotDatuRindu(saraksts, nosaukums, vertiba) {
+  var termins = izveidotTekstaElementu("dt", nosaukums);
+  saraksts.appendChild(termins);
+  var vertibasElements = izveidotTekstaElementu("dd", vertiba);
+  saraksts.appendChild(vertibasElements);
+}
+
+ieladetSpeli();

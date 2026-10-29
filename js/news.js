@@ -1,35 +1,55 @@
-function ieladet() {
-  fetch("/api/news")
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (zinas) {
-      var el = document.getElementById("zinu-saraksts");
-
-      if (zinas.length === 0) {
-        el.textContent = "Pagaidām nav ziņu.";
-        return;
-      }
-
-      var html = "";
-
-      for (var i = 0; i < zinas.length; i++) {
-        var z = zinas[i];
-        html += "<article>" +
-          "<h3>" + z.virsraksts + "</h3>" +
-          "<p><small>" + z.kategorija + " · " + z.publicesanas_datums + "</small></p>";
-
-        if (z.attels) {
-          html += "<img src=\"" + z.attels + "\" alt=\"\">";
-        }
-
-        html += "<p>" + z.iss_apraksts + "</p>" +
-          "<p>" + z.pilns_saturs + "</p>" +
-          "</article>";
-      }
-
-      el.innerHTML = html;
-    });
+async function ieladetZinas() {
+  var sarakstaVieta = document.getElementById("zinu-saraksts");
+  try {
+    var zinas = await iegutJson("/api/news");
+    paraditZinas(sarakstaVieta, zinas);
+  } catch (kluda) {
+    paraditKludu(sarakstaVieta, "Neizdevās ielādēt datus");
+  }
 }
 
-ieladet();
+function paraditZinas(sarakstaVieta, zinas) {
+  sarakstaVieta.textContent = "";
+  if (zinas.length === 0) {
+    sarakstaVieta.textContent = "Pagaidām nav ziņu.";
+    return;
+  }
+  for (var i = 0; i < zinas.length; i++) {
+    var zina = zinas[i];
+    var kartite = izveidotZinasKartiti(zina);
+    sarakstaVieta.appendChild(kartite);
+  }
+}
+
+function izveidotZinasKartiti(zina) {
+  var kartite = document.createElement("article");
+  var virsraksts = izveidotTekstaElementu("h3", zina.virsraksts);
+  kartite.appendChild(virsraksts);
+  var informacija = izveidotZinasInfo(zina);
+  kartite.appendChild(informacija);
+  var attels = izveidotZinasAttelu(zina.attels);
+  if (attels) {
+    kartite.appendChild(attels);
+  }
+  pievienotZinasTekstu(kartite, zina);
+  return kartite;
+}
+
+function pievienotZinasTekstu(kartite, zina) {
+  var issApraksts = izveidotTekstaElementu("p", zina.iss_apraksts);
+  kartite.appendChild(issApraksts);
+  var pilnsSaturs = izveidotTekstaElementu("p", zina.pilns_saturs);
+  kartite.appendChild(pilnsSaturs);
+}
+
+function izveidotZinasAttelu(attelaCels) {
+  if (!attelaCels) {
+    return null;
+  }
+  var attels = document.createElement("img");
+  attels.src = attelaCels;
+  attels.alt = "";
+  return attels;
+}
+
+ieladetZinas();

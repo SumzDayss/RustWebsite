@@ -1,8 +1,8 @@
 var forma = document.getElementById("zinas-forma");
 var poga = document.getElementById("zinas-poga");
 var atceltPoga = document.getElementById("atcelt-poga");
-var zinas = [];
 var spelesForma = document.getElementById("speles-forma");
+var zinas = [];
 
 function escapeHtml(teksts) {
   return String(teksts)
@@ -13,79 +13,68 @@ function escapeHtml(teksts) {
     .replace(/'/g, "&#39;");
 }
 
-function ieladetSpeli() {
-  if (!spelesForma) return;
-  fetch("/api/game")
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (spele) {
-      if (!spele) return;
-      document.getElementById("speles-izstradatajs").value = spele.izstradatajs || "";
-      document.getElementById("speles-izdevejs").value = spele.izdevejs || "";
-      document.getElementById("speles-zanrs").value = spele.zanrs || "";
-      document.getElementById("speles-izdosanas-gads").value = spele.izdosanas_gads || "";
-      document.getElementById("speles-platforma").value = spele.platforma || "";
-      document.getElementById("speles-apraksts").value = spele.apraksts || "";
-      document.getElementById("speles-galvenais-attels").value = spele.galvenais_attels || "";
-    });
+function paraditPazinojumu(id, teksts, kluda) {
+  var vieta = document.getElementById(id);
+  vieta.style.color = kluda ? "red" : "green";
+  vieta.textContent = teksts;
 }
 
-if (spelesForma) {
-  spelesForma.addEventListener("submit", function (event) {
-    event.preventDefault();
-    var dati = {
-      izstradatajs: document.getElementById("speles-izstradatajs").value,
-      izdevejs: document.getElementById("speles-izdevejs").value,
-      zanrs: document.getElementById("speles-zanrs").value,
-      izdosanas_gads: document.getElementById("speles-izdosanas-gads").value,
-      platforma: document.getElementById("speles-platforma").value,
-      apraksts: document.getElementById("speles-apraksts").value,
-      galvenais_attels: document.getElementById("speles-galvenais-attels").value
-    };
-    fetch("/api/game", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dati)
-    }).then(function (response) {
-      var pazi = document.getElementById("speles-pazinojums");
-      if (!response.ok) {
-        return response.json().then(function (atbilde) {
-          pazi.style.color = "red";
-          pazi.textContent = atbilde.error;
-        });
-      }
-      pazi.style.color = "green";
-      pazi.textContent = "Saglabāts";
-      setTimeout(function () {
-        pazi.textContent = "";
-      }, 2000);
-    });
-  });
+async function ieladetSpeli() {
+  var atbilde = await fetch("/api/game");
+  var spele = await atbilde.json();
+  if (!spele) return;
+  document.getElementById("speles-izstradatajs").value = spele.izstradatajs || "";
+  document.getElementById("speles-izdevejs").value = spele.izdevejs || "";
+  document.getElementById("speles-zanrs").value = spele.zanrs || "";
+  document.getElementById("speles-izdosanas-gads").value = spele.izdosanas_gads || "";
+  document.getElementById("speles-platforma").value = spele.platforma || "";
+  document.getElementById("speles-apraksts").value = spele.apraksts || "";
+  document.getElementById("speles-galvenais-attels").value = spele.galvenais_attels || "";
 }
 
-function ieladetZinas() {
-  fetch("/api/news")
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (data) {
-      zinas = data;
-      var html = "";
-      var i = 0;
-      while (i < zinas.length) {
-        var z = zinas[i];
-        html += "<div class=\"ieraksts\"><strong>" + escapeHtml(z.virsraksts) + "</strong> <small>(" + escapeHtml(z.kategorija) + ")</small><br><button class=\"dzest-poga\" onclick=\"labot(" + z.id + ")\">Labot</button> <button class=\"dzest-poga\" onclick=\"dzestZinu(" + z.id + ")\">Dzēst</button></div>";
-        i = i + 1;
-      }
-      if (html == "") html = "<p>Nav ziņu.</p>";
-      document.getElementById("zinu-saraksts").innerHTML = html;
-    });
-}
-
-forma.addEventListener("submit", function (event) {
+spelesForma.addEventListener("submit", async function (event) {
   event.preventDefault();
+  var dati = {
+    izstradatajs: document.getElementById("speles-izstradatajs").value,
+    izdevejs: document.getElementById("speles-izdevejs").value,
+    zanrs: document.getElementById("speles-zanrs").value,
+    izdosanas_gads: document.getElementById("speles-izdosanas-gads").value,
+    platforma: document.getElementById("speles-platforma").value,
+    apraksts: document.getElementById("speles-apraksts").value,
+    galvenais_attels: document.getElementById("speles-galvenais-attels").value
+  };
+  var atbilde = await fetch("/api/game", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dati)
+  });
+  if (!atbilde.ok) {
+    var kluda = await atbilde.json();
+    paraditPazinojumu("speles-pazinojums", kluda.error, true);
+    return;
+  }
+  paraditPazinojumu("speles-pazinojums", "Saglabāts", false);
+  setTimeout(function () {
+    document.getElementById("speles-pazinojums").textContent = "";
+  }, 2000);
+});
 
+async function ieladetZinas() {
+  var atbilde = await fetch("/api/news");
+  zinas = await atbilde.json();
+  var rindas = zinas.map(function (z) {
+    return '<div class="ieraksts"><strong>' + escapeHtml(z.virsraksts) +
+      '</strong> <small>(' + escapeHtml(z.kategorija) + ')</small><br>' +
+      '<button class="dzest-poga" onclick="labot(' + z.id + ')">Labot</button> ' +
+      '<button class="dzest-poga" onclick="dzestZinu(' + z.id + ')">Dzēst</button></div>';
+  });
+  var html = rindas.join("");
+  if (html === "") html = "<p>Nav ziņu.</p>";
+  document.getElementById("zinu-saraksts").innerHTML = html;
+}
+
+forma.addEventListener("submit", async function (event) {
+  event.preventDefault();
   var id = document.getElementById("zinas-id").value;
   var dati = {
     kategorija: document.getElementById("kategorija").value,
@@ -95,48 +84,29 @@ forma.addEventListener("submit", function (event) {
     attels: document.getElementById("attels").value,
     publicesanas_datums: document.getElementById("publicesanas_datums").value
   };
-
-  var url = "/api/news";
-  var metode = "POST";
-
-  if (id) {
-    url = "/api/news/" + id;
-    metode = "PUT";
-  }
-
-  fetch(url, {
-    method: metode,
+  var atbilde = await fetch(id ? "/api/news/" + id : "/api/news", {
+    method: id ? "PUT" : "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dati)
-  }).then(function (response) {
-    var pazi = document.getElementById("zinas-pazinojums");
-    if (!response.ok) {
-      return response.json().then(function (atbilde) {
-        pazi.style.color = "red";
-        pazi.textContent = atbilde.error;
-      });
-    }
-    pazi.textContent = "";
-    forma.reset();
-    document.getElementById("zinas-id").value = "";
-    poga.textContent = "Pievienot";
-    atceltPoga.hidden = true;
-    ieladetZinas();
   });
+  if (!atbilde.ok) {
+    var kluda = await atbilde.json();
+    paraditPazinojumu("zinas-pazinojums", kluda.error, true);
+    return;
+  }
+  document.getElementById("zinas-pazinojums").textContent = "";
+  forma.reset();
+  document.getElementById("zinas-id").value = "";
+  poga.textContent = "Pievienot";
+  atceltPoga.hidden = true;
+  ieladetZinas();
 });
 
 function labot(id) {
-  var i = 0;
-  var atrasta = null;
-  while (i < zinas.length) {
-    if (zinas[i].id == id) {
-      atrasta = zinas[i];
-      break;
-    }
-    i = i + 1;
-  }
-  if (atrasta == null) return;
-
+  var atrasta = zinas.find(function (z) {
+    return z.id == id;
+  });
+  if (!atrasta) return;
   document.getElementById("zinas-id").value = atrasta.id;
   document.getElementById("kategorija").value = atrasta.kategorija;
   document.getElementById("virsraksts").value = atrasta.virsraksts;
@@ -156,60 +126,46 @@ atceltPoga.addEventListener("click", function () {
   atceltPoga.hidden = true;
 });
 
-function dzestZinu(id) {
-  if (confirm("Dzēst?")) {
-    fetch("/api/news/" + id, { method: "DELETE" }).then(function () {
-      ieladetZinas();
-    });
-  }
+async function dzestZinu(id) {
+  if (!confirm("Dzēst?")) return;
+  await fetch("/api/news/" + id, { method: "DELETE" });
+  ieladetZinas();
 }
 
-document.getElementById("galerijas-forma").addEventListener("submit", function (event) {
+document.getElementById("galerijas-forma").addEventListener("submit", async function (event) {
   event.preventDefault();
-
   var fd = new FormData();
   fd.append("attels", document.getElementById("galerijas-fails").files[0]);
   fd.append("nosaukums", document.getElementById("galerijas-nosaukums").value);
   fd.append("apraksts", document.getElementById("galerijas-apraksts").value);
-
-  fetch("/api/gallery", { method: "POST", body: fd }).then(function (response) {
-    var pazi = document.getElementById("galerijas-pazinojums");
-    if (!response.ok) {
-      return response.json().then(function (atbilde) {
-        pazi.style.color = "red";
-        pazi.textContent = atbilde.error;
-      });
-    }
-    pazi.textContent = "";
-    event.target.reset();
-    ieladetGaleriju();
-  });
+  var atbilde = await fetch("/api/gallery", { method: "POST", body: fd });
+  if (!atbilde.ok) {
+    var kluda = await atbilde.json();
+    paraditPazinojumu("galerijas-pazinojums", kluda.error, true);
+    return;
+  }
+  document.getElementById("galerijas-pazinojums").textContent = "";
+  event.target.reset();
+  ieladetGaleriju();
 });
 
-function ieladetGaleriju() {
-  fetch("/api/gallery")
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (atteli) {
-      var html = "";
-      var i = 0;
-      while (i < atteli.length) {
-        var a = atteli[i];
-        html += "<div class=\"ieraksts\"><img src=\"" + escapeHtml(a.attela_cels) + "\" alt=\"\"><strong>" + escapeHtml(a.nosaukums) + "</strong><br><button class=\"dzest-poga\" onclick=\"dzestAttelu(" + a.id + ")\">Dzēst</button></div>";
-        i = i + 1;
-      }
-      if (html == "") html = "<p>Nav attēlu.</p>";
-      document.getElementById("galerijas-saraksts").innerHTML = html;
-    });
+async function ieladetGaleriju() {
+  var atbilde = await fetch("/api/gallery");
+  var atteli = await atbilde.json();
+  var rindas = atteli.map(function (a) {
+    return '<div class="ieraksts"><img src="' + escapeHtml(a.attela_cels) + '" alt="">' +
+      '<strong>' + escapeHtml(a.nosaukums) + '</strong><br>' +
+      '<button class="dzest-poga" onclick="dzestAttelu(' + a.id + ')">Dzēst</button></div>';
+  });
+  var html = rindas.join("");
+  if (html === "") html = "<p>Nav attēlu.</p>";
+  document.getElementById("galerijas-saraksts").innerHTML = html;
 }
 
-function dzestAttelu(id) {
-  if (confirm("Dzēst?")) {
-    fetch("/api/gallery/" + id, { method: "DELETE" }).then(function () {
-      ieladetGaleriju();
-    });
-  }
+async function dzestAttelu(id) {
+  if (!confirm("Dzēst?")) return;
+  await fetch("/api/gallery/" + id, { method: "DELETE" });
+  ieladetGaleriju();
 }
 
 ieladetSpeli();

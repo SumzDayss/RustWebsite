@@ -1,16 +1,6 @@
 async function iegutJson(url) {
   var atbilde = await fetch(url);
-  if (!atbilde.ok) {
-    var kluda = new Error("Neizdevās ielādēt datus");
-    kluda.status = atbilde.status;
-    throw kluda;
-  }
-  var atbildesDati = await atbilde.json();
-  return atbildesDati;
-}
-
-function paraditKludu(vieta, teksts) {
-  vieta.textContent = teksts;
+  return atbilde.json();
 }
 
 function izveidotTekstaElementu(tips, teksts) {
@@ -21,9 +11,8 @@ function izveidotTekstaElementu(tips, teksts) {
 
 function izveidotZinasInfo(zina) {
   var rindkopa = document.createElement("p");
-  var mazaisElements = document.createElement("small");
-  var teksts = zina.kategorija + " · " + zina.publicesanas_datums;
-  mazaisElements.textContent = teksts;
-  rindkopa.appendChild(mazaisElements);
+  var mazais = document.createElement("small");
+  mazais.textContent = zina.kategorija + " · " + zina.publicesanas_datums;
+  rindkopa.appendChild(mazais);
   return rindkopa;
 }

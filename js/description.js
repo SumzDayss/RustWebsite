@@ -1,59 +1,42 @@
 async function ieladetSpeli() {
+  var spele = await iegutJson("/api/game");
   var vieta = document.getElementById("spelines-dati");
-  try {
-    var spele = await iegutJson("/api/game");
-    paraditSpelesDatus(vieta, spele);
-  } catch (kluda) {
-    paraditKludu(vieta, "Neizdevās ielādēt datus");
-  }
-}
-
-function paraditSpelesDatus(vieta, spele) {
   if (!spele) {
     vieta.textContent = "Dati nav pieejami.";
     return;
   }
-  var nosaukums = document.getElementById("spelines-nosaukums");
-  nosaukums.textContent = spele.nosaukums;
+  document.getElementById("spelines-nosaukums").textContent = spele.nosaukums;
   document.title = spele.nosaukums + " – Par spēli";
-  var saturs = izveidotSpelesSaturs(spele);
-  vieta.textContent = "";
-  vieta.appendChild(saturs);
-}
 
-function izveidotSpelesSaturs(spele) {
-  var saturs = document.createElement("div");
-  saturs.className = "speles-saturs";
   var attels = document.createElement("img");
   attels.className = "speles-attels";
   attels.src = spele.galvenais_attels;
   attels.alt = spele.nosaukums;
-  saturs.appendChild(attels);
-  var informacija = izveidotSpelesInformaciju(spele);
-  saturs.appendChild(informacija);
-  return saturs;
-}
 
-function izveidotSpelesInformaciju(spele) {
-  var informacija = document.createElement("div");
-  informacija.className = "speles-info";
+  var info = document.createElement("div");
+  info.className = "speles-info";
   var saraksts = document.createElement("dl");
-  pievienotDatuRindu(saraksts, "Izstrādātājs", spele.izstradatajs);
-  pievienotDatuRindu(saraksts, "Izdevējs", spele.izdevejs);
-  pievienotDatuRindu(saraksts, "Žanrs", spele.zanrs);
-  pievienotDatuRindu(saraksts, "Izdošanas gads", spele.izdosanas_gads);
-  pievienotDatuRindu(saraksts, "Platforma", spele.platforma);
-  informacija.appendChild(saraksts);
-  var apraksts = izveidotTekstaElementu("p", spele.apraksts);
-  informacija.appendChild(apraksts);
-  return informacija;
-}
+  var rindas = [
+    ["Izstrādātājs", spele.izstradatajs],
+    ["Izdevējs", spele.izdevejs],
+    ["Žanrs", spele.zanrs],
+    ["Izdošanas gads", spele.izdosanas_gads],
+    ["Platforma", spele.platforma]
+  ];
+  rindas.forEach(function (rinda) {
+    saraksts.appendChild(izveidotTekstaElementu("dt", rinda[0]));
+    saraksts.appendChild(izveidotTekstaElementu("dd", rinda[1]));
+  });
+  info.appendChild(saraksts);
+  info.appendChild(izveidotTekstaElementu("p", spele.apraksts));
 
-function pievienotDatuRindu(saraksts, nosaukums, vertiba) {
-  var termins = izveidotTekstaElementu("dt", nosaukums);
-  saraksts.appendChild(termins);
-  var vertibasElements = izveidotTekstaElementu("dd", vertiba);
-  saraksts.appendChild(vertibasElements);
+  var saturs = document.createElement("div");
+  saturs.className = "speles-saturs";
+  saturs.appendChild(attels);
+  saturs.appendChild(info);
+
+  vieta.textContent = "";
+  vieta.appendChild(saturs);
 }
 
 ieladetSpeli();

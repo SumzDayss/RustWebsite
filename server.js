@@ -89,9 +89,10 @@ function parbauditZinu(b) {
   if (b.attels && String(b.attels).length > 255) return "Attēla ceļš ir pārāk garš (max 255)";
   var datums = String(b.publicesanas_datums);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(datums)) return "Datuma formātam jābūt YYYY-MM-DD";
-  var gads = Number(datums.slice(0, 4));
-  var menesis = Number(datums.slice(5, 7));
-  var diena = Number(datums.slice(8, 10));
+  var dalas = datums.split("-");
+  var gads = Number(dalas[0]);
+  var menesis = Number(dalas[1]);
+  var diena = Number(dalas[2]);
   var parbaude = new Date(gads, menesis - 1, diena);
   if (parbaude.getFullYear() !== gads || parbaude.getMonth() !== menesis - 1 || parbaude.getDate() !== diena) {
     return "Datums nav derīgs";
@@ -100,13 +101,12 @@ function parbauditZinu(b) {
 }
 
 async function dzestAtteluFailu(cels) {
-  if (!cels) return;
-  if (cels.indexOf("img/galerija/") !== 0 || cels.indexOf("..") !== -1) return;
-  const [zinas] = await pool.query("SELECT COUNT(*) AS skaits FROM zinas WHERE attels = ?", [cels]);
-  const [galerija] = await pool.query("SELECT COUNT(*) AS skaits FROM galerija WHERE attela_cels = ?", [cels]);
-  const [spele] = await pool.query("SELECT COUNT(*) AS skaits FROM par_speli WHERE galvenais_attels = ?", [cels]);
-  var skaits = Number(zinas[0].skaits) + Number(galerija[0].skaits) + Number(spele[0].skaits);
-  if (skaits === 0) {
+  if (!cels || !cels.startsWith("img/galerija/") || cels.includes("..")) return;
+  const [rows] = await pool.query(
+    "SELECT (SELECT COUNT(*) FROM zinas WHERE attels = ?) + (SELECT COUNT(*) FROM galerija WHERE attela_cels = ?) + (SELECT COUNT(*) FROM par_speli WHERE galvenais_attels = ?) AS skaits",
+    [cels, cels, cels]
+  );
+  if (Number(rows[0].skaits) === 0) {
     fs.unlink(path.join(__dirname, cels), function () {});
   }
 }
@@ -123,15 +123,15 @@ lapas.forEach((lapa) => {
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.get("/style.css", (req, res) => res.sendFile(path.join(__dirname, "style.css")));
 
-app.get("/api/game", async function (req, res, next) {
+app.get("/api/game", async function (req, res) {
   const [rows] = await pool.query("SELECT * FROM par_speli LIMIT 1");
   res.json(rows[0] || null);
 });
 
-app.put("/api/game", async function (req, res, next) {
-  const b = req.body;
-  var kluda = parbauditSpeli(b);
+app.put("/api/game", async function (req, res) {
+  var kluda = parbauditSpeli(req.body);
   if (kluda) return res.status(400).json({ error: kluda });
+  const b = req.body;
   await pool.query(
     "UPDATE par_speli SET izstradatajs = ?, izdevejs = ?, zanrs = ?, izdosanas_gads = ?, platforma = ?, apraksts = ?, galvenais_attels = ? WHERE id = ?",
     [b.izstradatajs, b.izdevejs, b.zanrs, b.izdosanas_gads, b.platforma, b.apraksts, b.galvenais_attels, 1]
@@ -139,15 +139,15 @@ app.put("/api/game", async function (req, res, next) {
   res.json({ ok: true });
 });
 
-app.get("/api/news", async function (req, res, next) {
+app.get("/api/news", async function (req, res) {
   const [rows] = await pool.query("SELECT * FROM zinas ORDER BY publicesanas_datums DESC");
   res.json(rows);
 });
 
-app.post("/api/news", async function (req, res, next) {
-  const b = req.body;
-  var kluda = parbauditZinu(b);
+app.post("/api/news", async function (req, res) {
+  var kluda = parbauditZinu(req.body);
   if (kluda) return res.status(400).json({ error: kluda });
+  const b = req.body;
   const [r] = await pool.query(
     "INSERT INTO zinas (spele_id, kategorija, virsraksts, iss_apraksts, pilns_saturs, attels, publicesanas_datums) VALUES (1, ?, ?, ?, ?, ?, ?)",
     [b.kategorija, b.virsraksts, b.iss_apraksts, b.pilns_saturs, b.attels || "", b.publicesanas_datums]
@@ -155,10 +155,10 @@ app.post("/api/news", async function (req, res, next) {
   res.json({ id: r.insertId });
 });
 
-app.put("/api/news/:id", async function (req, res, next) {
-  const b = req.body;
-  var kluda = parbauditZinu(b);
+app.put("/api/news/:id", async function (req, res) {
+  var kluda = parbauditZinu(req.body);
   if (kluda) return res.status(400).json({ error: kluda });
+  const b = req.body;
   const [veci] = await pool.query("SELECT attels FROM zinas WHERE id = ?", [req.params.id]);
   await pool.query(
     "UPDATE zinas SET kategorija = ?, virsraksts = ?, iss_apraksts = ?, pilns_saturs = ?, attels = ?, publicesanas_datums = ? WHERE id = ?",
@@ -170,19 +170,19 @@ app.put("/api/news/:id", async function (req, res, next) {
   res.json({ ok: true });
 });
 
-app.delete("/api/news/:id", async function (req, res, next) {
+app.delete("/api/news/:id", async function (req, res) {
   const [rows] = await pool.query("SELECT attels FROM zinas WHERE id = ?", [req.params.id]);
   await pool.query("DELETE FROM zinas WHERE id = ?", [req.params.id]);
   if (rows[0]) await dzestAtteluFailu(rows[0].attels);
   res.json({ ok: true });
 });
 
-app.get("/api/gallery", async function (req, res, next) {
+app.get("/api/gallery", async function (req, res) {
   const [rows] = await pool.query("SELECT * FROM galerija ORDER BY id");
   res.json(rows);
 });
 
-app.post("/api/gallery", augsUpielade, async function (req, res, next) {
+app.post("/api/gallery", augsUpielade, async function (req, res) {
   if (!req.file) return res.status(400).json({ error: "Nav fails" });
   var kluda = parbauditGaleriju(req.body);
   if (kluda) return res.status(400).json({ error: kluda });
@@ -194,7 +194,7 @@ app.post("/api/gallery", augsUpielade, async function (req, res, next) {
   res.json({ id: r.insertId, attela_cels: cels });
 });
 
-app.delete("/api/gallery/:id", async function (req, res, next) {
+app.delete("/api/gallery/:id", async function (req, res) {
   const [rows] = await pool.query("SELECT attela_cels FROM galerija WHERE id = ?", [req.params.id]);
   await pool.query("DELETE FROM galerija WHERE id = ?", [req.params.id]);
   if (rows[0]) await dzestAtteluFailu(rows[0].attela_cels);
@@ -206,35 +206,24 @@ app.get("/api/saturs", function (req, res) {
 });
 
 app.get("/api/saturs/:id", function (req, res) {
-  var i = 0;
-  var ieraksts = null;
-  while (i < saturs.length) {
-    if (saturs[i].id == req.params.id) {
-      ieraksts = saturs[i];
-      break;
-    }
-    i = i + 1;
-  }
+  var ieraksts = saturs.find(function (s) {
+    return s.id == req.params.id;
+  });
   if (ieraksts) res.json(ieraksts);
   else res.status(404).json({ error: "Nav atrasts" });
 });
 
-app.get("/api/search", async function (req, res, next) {
+app.get("/api/search", async function (req, res) {
   var q = req.query.q || "";
   if (q === "") return res.json({ zinas: [], saturs: [] });
   var [zinas] = await pool.query(
     "SELECT * FROM zinas WHERE virsraksts LIKE ? OR iss_apraksts LIKE ? OR pilns_saturs LIKE ?",
     ["%" + q + "%", "%" + q + "%", "%" + q + "%"]
   );
-  var atrasts = [];
-  var i = 0;
   var q2 = q.toLowerCase();
-  while (i < saturs.length) {
-    if ((saturs[i].nosaukums + " " + saturs[i].apraksts).toLowerCase().indexOf(q2) !== -1) {
-      atrasts.push(saturs[i]);
-    }
-    i = i + 1;
-  }
+  var atrasts = saturs.filter(function (s) {
+    return (s.nosaukums + " " + s.apraksts).toLowerCase().indexOf(q2) !== -1;
+  });
   res.json({ zinas: zinas, saturs: atrasts });
 });
 

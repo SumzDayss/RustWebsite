@@ -1,35 +1,8 @@
--- ============================================================
--- Rust fan site - demo database seed
--- Run in MySQL Workbench: open this file and press Execute.
---
--- Safe to re-run:
---   * database and tables are created only if missing
---   * demo rows use fixed IDs, so they are replaced, not duplicated
---   * rows added through the admin panel (higher IDs) are kept
--- ============================================================
-
 CREATE DATABASE IF NOT EXISTS rust_lapa
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
 USE rust_lapa;
-
--- Older versions called the game table `spele`; rename it to match the
--- "Par spēli" section. Safe on fresh installs (does nothing).
-SET @has_old_spele := (
-  SELECT COUNT(*) FROM information_schema.tables
-  WHERE table_schema = DATABASE() AND table_name = 'spele'
-);
-SET @has_new_par_speli := (
-  SELECT COUNT(*) FROM information_schema.tables
-  WHERE table_schema = DATABASE() AND table_name = 'par_speli'
-);
-SET @rename_sql := IF(@has_old_spele > 0 AND @has_new_par_speli = 0,
-  'RENAME TABLE spele TO par_speli',
-  'SELECT 1');
-PREPARE rename_stmt FROM @rename_sql;
-EXECUTE rename_stmt;
-DEALLOCATE PREPARE rename_stmt;
 
 CREATE TABLE IF NOT EXISTS par_speli (
   id               INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -69,9 +42,7 @@ CREATE TABLE IF NOT EXISTS galerija (
     REFERENCES par_speli (id)
 ) ENGINE=InnoDB;
 
--- ------------------------------------------------------------
 -- Game
--- ------------------------------------------------------------
 INSERT IGNORE INTO par_speli
   (id, nosaukums, izstradatajs, izdevejs, zanrs, izdosanas_gads, platforma, apraksts, galvenais_attels)
 VALUES
@@ -79,111 +50,62 @@ VALUES
    'Rust ir izdzīvošanas spēle atklātā pasaulē kopā ar citiem cilvēkiem. Vāc resursus, būvē bāzi un cīnies par izdzīvošanu.',
    'img/main.png');
 
--- ------------------------------------------------------------
 -- News (newest first on the site, dates drive the order)
--- ------------------------------------------------------------
 REPLACE INTO zinas
   (id, spele_id, kategorija, virsraksts, iss_apraksts, pilns_saturs, attels, publicesanas_datums)
 VALUES
-  (1, 1, 'Atjauninājums', 'Jauns atjauninājums',
-   'Izstrādātāji ir līdzsvarojuši ieročus.',
-   'Atjauninājumā pārstrādāti vairāki ieroči un pievienotas jaunas mantas.',
-   'img/main.png', '2026-10-15'),
+  (1, 1, 'devblog', 'Halloween 2026',
+   'Salas tumsā atgriežas briesmoņi, un nejaušās vietās atveras plaisas.',
+   'Salai pārklājas tumsa, un briesmoņi pamostas no miega. Plaisas atveras nejaušās vietās un ved uz nezināmu galamērķi. Ja uzdrošināsies tajās ieiet, labāk esi sagatavojies!',
+   'img/rust_news1', '2026-10-22'),
 
-  (2, 1, 'Serveris', 'Servera vipes grafiks',
-   'Šomēnes notiks ikmēneša vipe.',
-   'Katra mēneša otrā piektdiena ir vipes diena. Pēc vipes visi sāk no jauna.',
-   '', '2026-10-12'),
+  (2, 1, 'devblog', 'Livestock Update',
+   'Būtiski atjaunota lauksaimniecība ar jauniem lopkopības dzīvniekiem un biodegvielas ģeneratoru.',
+   'Šī mēneša atjauninājums ievērojami atsvaidzina lauksaimniecību, pievienojot jaunus lopkopības dzīvniekus, kritērus un peldētājus. Tāpat tas ievieš jaunas ēdienu receptes, jauno biodegvielas ģeneratoru, pārstrādātas smilšu maisu barikādes un jaunas Powergrid loot telpas, ko izlaupīt. Kā ierasts, iekļauti arī kļūdu labojumi, uzlabojumi un ērtuma izmaiņas.',
+   'img/rust_news2', '2026-10-01'),
 
-  (3, 1, 'Izpārdošana', 'Rust ir izpārdošanā',
-   'Spēli var iegādāties ar atlaidi.',
-   'Steam izpārdošanā Rust ir atlaide 50%.',
-   '', '2026-10-05'),
+  (3, 1, 'devblog', 'Breach and Clear',
+   'Pieminekļu bloķētāji, salaužams helikoptera bruņojums un daudz balansa uzlabojumu.',
+   'Šī mēneša atjauninājums ievieš pieminekļu bloķētājus, salaužamu uzbrukuma helikoptera bruņojumu, HQM resursu punktus un uzturēšanas grupu mērogošanu. Tam pievienoti dažādi priekšmetu uzlabojumi, ērtuma un balansa izmaiņas, kā arī daudzi veiktspējas uzlabojumi un vēl daudz kas cits.',
+   'img/rust_news3', '2026-09-03'),
 
-  (4, 1, 'Padomi', 'Kā uzbūvēt pirmo bāzi',
-   'Sāc ar divu istabu koka bāzi.',
-   'Pirmajai bāzei pietiek ar 2x2 koka konstrukciju un kodu durvīm.',
-   'img/hero.svg', '2026-09-28'),
+  (4, 1, 'devblog', 'Power Trip',
+   'Spēlētāju uzturēti pieminekļi un atjaunojama spēkstacija.',
+   'Šī mēneša atjauninājums ievieš spēlētāju uzturētus pieminekļus jaunā Satellite Crash veidolā, kupola sūknēšanu un atjaunojamu spēkstaciju, kā arī vēl citas izmaiņas. Tāpat iekļauts daudz balansa izmaiņu, kļūdu labojumu, optimizāciju, uzlabojumu un citu pilnveidojumu.',
+   'img/rust_news4', '2026-08-06'),
 
-  (5, 1, 'Notikumi', 'Sezonas noslēgums',
-   'Komandas sacentās par uzvarētāja titulu.',
-   'Serverī notika sezonas noslēguma pasākums ar balvām uzvarētājiem.',
-   '', '2026-09-20'),
+  (5, 1, 'devblog', 'Common Ground',
+   'Jauns daudzdzīvokļu kompleksa piemineklis, izīrējami veikali un jauna klanu sistēma.',
+   'Šī mēneša atjauninājumā ir jauns piemineklis — daudzdzīvokļu komplekss, izīrējami veikali, jauna klanu sistēma un galds, kā arī ērtuma uzlabojumi un vēl daudz kas cits.',
+   'img/rust_news5', '2026-07-02'),
 
-  (6, 1, 'Atjauninājums', 'Helikopteru transports atgriežas',
-   'Jaunajā atjauninājumā atkal pieejami helikopteri.',
-   'Pēc vairāku mēnešu pārtraukuma helikopteri atgriezušies spēlē ar uzlabotu degvielas patēriņu un jaunu krāsu shēmu.',
-   'img/galerija/demo-1.png', '2026-10-24'),
+  (6, 1, 'devblog', 'Built Different',
+   'Lielākā spēlētāju pārstrāde vairāku gadu laikā ar jauniem modeļiem un M16A2.',
+   'Šī mēneša atjauninājums nes Rust lielāko spēlētāju pārstrādi vairāku gadu laikā: jaunus spēlētāju modeļus un animācijas, jaunu bruņu komplektu un M16A2 šauteni. Tajā iekļauti arī ērtuma uzlabojumi, kļūdu labojumi, veiktspējas uzlabojumi un vēl daudz kas cits.',
+   'img/rust_news6', '2026-06-04'),
 
-  (7, 1, 'Serveris', 'Atvērts otrais Latvijas serveris',
-   'RUST LATVIA x2 tagad pieejams.',
-   'Otrais serveris ir paredzēts lielākām komandām - līdz 8 spēlētājiem. Reģistrējies Discord serverī, lai saņemtu piekļuvi.',
-   'img/galerija/demo-2.png', '2026-10-22'),
+  (7, 1, 'devblog', 'Upgrade hard, raid harder',
+   'Darbgalda uzlabojumi, jaunais mīnmetējs un uzlabota signalizācija.',
+   'Šī mēneša atjauninājums ievieš darbgalda uzlabojumus, jauno mīnmetēju un uzlabotu skārda bundžu signalizāciju, kā arī modeļu atsvaidzināšanu un pārveidošanu. Tam pievienoti daudzi ērtuma uzlabojumi, kļūdu labojumi un citas izmaiņas.',
+   'img/rust_news7', '2026-05-07'),
 
-  (8, 1, 'Notikumi', 'Helovīna pasākums visu nedēļu',
-   'Īpašas balvas un briesmoņu uzbrukumi.',
-   'No 26. līdz 31. oktobrim kartē parādīsies Helovīna dekorācijas, bet pieminekļos būs paaugstināts laupījums.',
-   'img/galerija/demo-3.png', '2026-10-19'),
+  (8, 1, 'devblog', 'Spring Clean',
+   'Divi jauni priekšmeti un daudz uzlabojumu un labojumu.',
+   'Šī mēneša atjauninājums ievieš DIVUS jaunus priekšmetus — bruņoto kāpņu lūkas vāku un ūdens riteni. Papildus tam ir ļoti daudz ērtuma uzlabojumu, kļūdu labojumu, labāka veiktspēja un vēl daudz kas cits.',
+   'img/rust_news8', '2026-04-02'),
 
-  (9, 1, 'Padomi', 'Kā aizsargāt bāzi no sprādzieniem',
-   'Armatūra un akmens ir lētākais risinājums.',
-   'Viena akmens siena iztur vairāk sprādzienu nekā koka. Ap bāzi izvieto barjeras un turi ārstniecības līdzekļus atsevišķā telpā.',
-   '', '2026-10-16'),
+  (9, 1, 'devblog', 'Shipshape',
+   'Lieli uzlabojumi dzīvei un cīņām uz ūdens un dziļjūrā.',
+   'Šī mēneša atjauninājums būtiski uzlabo to, kā dzīvot, būvēt un cīnīties uz ūdens un dziļjūrā. Tāpat tas pagarina dienas gaišo laiku un ievieš balansa izmaiņas, labojumus un ērtuma uzlabojumus.',
+   'img/rust_news9', '2026-03-05');
 
-  (10, 1, 'Izpārdošana', 'Atlaide 40% visai nedēļai',
-   'Steam atlaide beigsies svētdien.',
-   'Visas Rust kopijas un ādas ir pieejamas ar 40% atlaidi. Dāvanu kuponi darbojas arī pēc akcijas beigām.',
-   'img/galerija/demo-4.png', '2026-10-10'),
-
-  (11, 1, 'Atjauninājums', 'Jaunas ieroču ādas',
-   'Pievienotas 12 jaunas ādas.',
-   'Jaunajā kolekcijā iekļautas ādas šautenei, pistolei un cirvim. Tās var iegūt no jaunajām kastēm.',
-   'img/galerija/demo-5.png', '2026-10-02'),
-
-  (12, 1, 'Kopiena', 'Klana vakars piektdien',
-   'Ieeja tikai ar Discord balss kanālu.',
-   'Piektdien plkst. 20:00 notiks kopienas vakars. Dalībniekiem būs iespēja izmēģināt jauno karti pirms oficiālās palaišanas.',
-   '', '2026-09-25'),
-
-  (13, 1, 'Ceļvedis', 'Iesācēja ceļvedis: pirmās 24 stundas',
-   'Ko darīt pirmajā spēles dienā.',
-   'Sāc ar akmeni un koku, uzcel mazu bāzi tālu no ceļiem, un tikai pēc tam dodies uz pieminekļiem. Nekad neaizmirsti kodu durvis.',
-   'img/galerija/demo-6.png', '2026-09-18'),
-
-  (14, 1, 'Serveris', 'Septembra vipes grafiks',
-   'Vipes notiks katru otro piektdienu.',
-   'Nākamās vipes: 11. un 25. septembris plkst. 18:00 pēc Latvijas laika. Pēc vipes visi spēlētāji sāk no jauna.',
-   '', '2026-09-10'),
-
-  (15, 1, 'Atjauninājums', 'Jaunas alas un bunkuri',
-   'Kartē parādījušās jaunas procedurālās alas.',
-   'Alās atrodami reti resursi un jauni NPC ienaidnieki. Ieejas ir marķētas kartē ar zilu ikonu.',
-   'img/galerija/demo-1.png', '2026-09-01'),
-
-  (16, 1, 'Notikumi', 'Vasaras turnīrs noslēdzies',
-   'Uzvarēja komanda Nordic Wolves.',
-   'Trīs nedēļu turnīrā piedalījās 24 komandas. Finālā Nordic Wolves pārspēja komandu Iron Crew ar 3:1.',
-   'img/galerija/demo-2.png', '2026-08-20'),
-
-  (17, 1, 'Padomi', 'Elektrotīklu pamati',
-   'Sāc ar mazu ģeneratoru un vienu akumulatoru.',
-   'Elektrotīkls ir dārgs, tāpēc sāc ar vienu ģeneratoru, kas baro tikai kodu durvis un lampas. Vēlāk pievieno saules paneļus.',
-   '', '2026-08-05'),
-
-  (18, 1, 'Izpārdošana', 'Vasaras izpārdošana',
-   'Pēdējā iespēja iegādāties ar atlaidi.',
-   'Vasaras izpārdošana noslēdzas 31. augustā. Atlaide attiecas uz spēli, bet ne uz ādām.',
-   'img/galerija/demo-3.png', '2026-07-28');
-
--- ------------------------------------------------------------
 -- Gallery (images already included in img/galerija/)
--- ------------------------------------------------------------
 REPLACE INTO galerija
   (id, spele_id, attela_cels, nosaukums, apraksts)
 VALUES
-  (1, 1, 'img/galerija/demo-1.png', 'Saullēkts pie bāzes', 'Koka bāze ar novērošanas torni.'),
-  (2, 1, 'img/galerija/demo-2.png', 'Nakts reids', 'Komanda dodas uz militāro bāzi.'),
-  (3, 1, 'img/galerija/demo-3.png', 'Pirmā bāze', '2x2 koka konstrukcija ar kodu durvīm.'),
-  (4, 1, 'img/galerija/demo-4.png', 'Pamests piemineklis', 'Rūpnīca kartes ziemeļos.'),
-  (5, 1, 'img/galerija/demo-5.png', 'Resursu ieguve', 'Sēra un metāla ieguve.'),
-  (6, 1, 'img/galerija/demo-6.png', 'Motocikls', 'Transportlīdzeklis gatavs braucienam.');
+  (1, 1, 'img/galerija/rust_news1', 'Halloween 2026', 'Salai pārklājas tumsa, un briesmoņi pamostas no miega. Plaisas atveras nejaušās vietās un ved uz nezināmu galamērķi.'),
+  (2, 1, 'img/galerija/rust_news2', 'Livestock Update', 'Komanda dodas uz militāro bāzi.'),
+  (3, 1, 'img/galerija/rust_news3', 'Breach and Clear', 'Pieminekļu bloķētāji, salaužams uzbrukuma helikoptera bruņojums, HQM resursu punkti un uzturēšanas grupu mērogošana.'),
+  (4, 1, 'img/galerija/rust_news4', 'Power Trip', 'Spēlētāju uzturēti pieminekļi jaunā Satellite Crash veidolā, kupola sūknēšana un atjaunojama spēkstacija.'),
+  (5, 1, 'img/galerija/rust_news5', 'Common Ground', 'Jauns piemineklis — daudzdzīvokļu komplekss, izīrējami veikali un jauna klanu sistēma ar galdu.'),
+  (6, 1, 'img/galerija/rust_news6', 'Built Different', 'Lielākā spēlētāju pārstrāde vairāku gadu laikā: jauni modeļi un animācijas, jauns bruņu komplekts un M16A2 šautene.');

@@ -153,7 +153,7 @@ async function ieladetGaleriju() {
   var atbilde = await fetch("/api/gallery");
   var atteli = await atbilde.json();
   var rindas = atteli.map(function (a) {
-    return '<div class="ieraksts"><img src="' + escapeHtml(a.attela_cels) + '" alt="">' +
+    return '<div class="ieraksts"><img src="' + escapeHtml(a.attela_cels) + '" alt="" onerror="this.onerror=null;this.src=\'/img/placeholder.svg\'">' +
       '<strong>' + escapeHtml(a.nosaukums) + '</strong><br>' +
       '<button class="dzest-poga" onclick="dzestAttelu(' + a.id + ')">Dzēst</button></div>';
   });

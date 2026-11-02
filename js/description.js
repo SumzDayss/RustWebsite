@@ -8,10 +8,7 @@ async function ieladetSpeli() {
   document.getElementById("spelines-nosaukums").textContent = spele.nosaukums;
   document.title = spele.nosaukums + " – Par spēli";
 
-  var attels = document.createElement("img");
-  attels.className = "speles-attels";
-  attels.src = spele.galvenais_attels;
-  attels.alt = spele.nosaukums;
+  var attels = izveidotAttelu(spele.galvenais_attels, spele.nosaukums, "speles-attels");
 
   var info = document.createElement("div");
   info.className = "speles-info";

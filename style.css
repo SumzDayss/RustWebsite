@@ -230,6 +230,35 @@ footer p {
   color: #d6d1c3;
 }
 
+#zinu-saraksts article {
+  margin-bottom: 40px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #2b3638;
+}
+
+#zinu-saraksts .zinas-attels {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin: 12px 0;
+  background: #2b3638;
+}
+
+#galerija .cards li {
+  flex: 1 1 250px;
+  max-width: 420px;
+}
+
+#galerija .cards img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #2b3638;
+}
+
 .speles-saturs {
   display: flex;
   gap: 30px;

@@ -7,10 +7,7 @@ async function ieladetZinas() {
     kartite.appendChild(izveidotTekstaElementu("h3", zina.virsraksts));
     kartite.appendChild(izveidotZinasInfo(zina));
     if (zina.attels) {
-      var attels = document.createElement("img");
-      attels.src = zina.attels;
-      attels.alt = "";
-      kartite.appendChild(attels);
+      kartite.appendChild(izveidotAttelu(zina.attels, zina.virsraksts, "zinas-attels"));
     }
     kartite.appendChild(izveidotTekstaElementu("p", zina.iss_apraksts));
     kartite.appendChild(izveidotTekstaElementu("p", zina.pilns_saturs));

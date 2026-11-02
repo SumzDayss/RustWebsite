@@ -8,6 +8,7 @@ async function ieladetSpelesDatus() {
   }
   nosaukums.textContent = "Kas ir " + spele.nosaukums + "?";
   apraksts.textContent = spele.apraksts;
+  uzstaditAttelu(document.getElementById("galvenais-attels"), spele.galvenais_attels);
 }
 
 ieladetSpelesDatus();

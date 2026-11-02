@@ -9,10 +9,7 @@ async function ieladetGaleriju() {
   saraksts.className = "cards";
   atteli.forEach(function (attels) {
     var rinda = document.createElement("li");
-    var attelaElements = document.createElement("img");
-    attelaElements.src = attels.attela_cels;
-    attelaElements.alt = attels.nosaukums;
-    rinda.appendChild(attelaElements);
+    rinda.appendChild(izveidotAttelu(attels.attela_cels, attels.nosaukums, "galerijas-attels"));
     var nosaukums = document.createElement("p");
     nosaukums.appendChild(izveidotTekstaElementu("strong", attels.nosaukums));
     rinda.appendChild(nosaukums);

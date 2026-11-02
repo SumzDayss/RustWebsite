@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS galerija (
     REFERENCES par_speli (id)
 ) ENGINE=InnoDB;
 
--- Game
+
 INSERT IGNORE INTO par_speli
   (id, nosaukums, izstradatajs, izdevejs, zanrs, izdosanas_gads, platforma, apraksts, galvenais_attels)
 VALUES
@@ -50,7 +50,8 @@ VALUES
    'Rust ir izdzīvošanas spēle atklātā pasaulē kopā ar citiem cilvēkiem. Vāc resursus, būvē bāzi un cīnies par izdzīvošanu.',
    'img/main.png');
 
--- News (newest first on the site, dates drive the order)
+DELETE FROM zinas WHERE id BETWEEN 10 AND 18 OR attels LIKE 'img/galerija/demo-%';
+
 REPLACE INTO zinas
   (id, spele_id, kategorija, virsraksts, iss_apraksts, pilns_saturs, attels, publicesanas_datums)
 VALUES
@@ -99,7 +100,9 @@ VALUES
    'Šī mēneša atjauninājums būtiski uzlabo to, kā dzīvot, būvēt un cīnīties uz ūdens un dziļjūrā. Tāpat tas pagarina dienas gaišo laiku un ievieš balansa izmaiņas, labojumus un ērtuma uzlabojumus.',
    'img/galerija/rust_news9.png', '2026-03-05');
 
--- Gallery (images already included in img/galerija/)
+
+DELETE FROM galerija WHERE attela_cels LIKE 'img/galerija/demo-%';
+
 REPLACE INTO galerija
   (id, spele_id, attela_cels, nosaukums, apraksts)
 VALUES
